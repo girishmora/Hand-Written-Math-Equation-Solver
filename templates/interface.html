@@ -1,0 +1,88 @@
+<!--Gerard Naughton G00209309 Main html file which will display my canvas, predict and clear buttons and info about my project-->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>index</title>
+
+    <!--Bootstrap styling-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb"
+        crossorigin="anonymous">
+
+    <!-- Our Own Custom Style Sheet -->
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='pagecss.css') }}">//"C:/Users/Anish/Desktop/stat/static/maincss.css"
+    <!-- Libraries needed -->
+    <!-- jQuery library -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ"
+        crossorigin="anonymous"></script>
+    <!--Bootstrap library-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+</head>
+
+<body>
+    <div classs=" ll">
+        <div class="container-fluid">
+            <div classs="row">
+                <!--Canvas and results floated to left side of page-->
+                <div class="draw-area float-left col-5">
+                    <div class="centered ">
+                        <canvas id="canvas" width="1000" height="500"></canvas>
+                    </div>
+                    <h1 class="instructions">Draw on the space above</h1>
+                    <div class="centered">
+	        <input type="radio" id="arithmetic" name="operation" onclick="ShowHideDiv()"/>
+	        <label style="color:white">Arithmetic</label>
+	        <input type="radio" id="polynomial" name="operation" onclick="ShowHideDiv()"/>
+	        <label style="color:white">Polynomial</label><br>
+	        <div id = "inne" style="color:white">Select either arithmetic or polynomial</div><br>
+                        <input type="button" class="myButton btn btn-outline-primary" value="Predict">
+                        <input type="button" id="clearButton" class="btn btn-outline-secondary" value="Clear">
+	        
+                        <div class="centered">
+                            <h1 id="result"></h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="main-title">
+                <h1>Number Recognition</h1>
+            </div>
+        </div>
+
+        <!--Ajax call Adapted from https://github.com/sleepokay/mnist-flask-app-->
+        <script src="{{url_for('static',filename='jquery-3.2.0.min.js')}}"></script>//"C:/Users/Anish/Desktop/stat/static/jquery-3.2.0.min.js"
+	    <script src="{{url_for('static',filename='interface.js')}}"></script>//"C:/Users/Anish/Desktop/stat/static/mainindex.js"
+	
+	    <script type="text/javascript">
+			var ele="";
+    			function ShowHideDiv() 
+			{
+        				var chkYes = document.getElementById("arithmetic");
+        				ele = chkYes.checked ? "arithmetic" : "polynomial";
+				document.getElementById("inne").innerHTML = "You have selected "+ele;
+   			}   
+	   		$(".myButton").click(function(){
+	   			$('#result').text('  Predicting...');
+	   			var $SCRIPT_ROOT = {{request.script_root|tojson|safe}};
+	   			const canvasObj = document.getElementById("canvas");
+				
+				var ele1="Hello";
+				const base64CanvasD1 = canvasObj.toDataURL('image/png').replace('data:image/png;base64,', '');
+				const data = {
+					operation: base64CanvasD1,
+					value: ele
+				}
+	   			$.ajax({
+	   				type: "POST",
+	   				url: $SCRIPT_ROOT + "/predict/",
+	   				data,
+	   				success: function(data){
+	   					$('#result').text('Predicted Output: ' + data);
+	   				}
+	   			});
+	   		});
+	   </script>
+
+</body>
+
+</html>
